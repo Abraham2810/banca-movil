@@ -1,4 +1,3 @@
-// screens/RegisterScreen.js
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 
@@ -9,35 +8,37 @@ export default function RegisterScreen({ navigation }) {
 
   const handleRegister = () => {
     console.log('User registered:', { firstName, lastName, email });
-    navigation.navigate('Login'); // Navega a la pantalla de inicio de sesión
+    navigation.navigate('Login');
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Register</Text>
+      <Text style={styles.title}>Registrarse</Text>
       <TextInput
         style={styles.input}
-        placeholder="First Name"
+        placeholder="Nombre"
         value={firstName}
         onChangeText={setFirstName}
       />
       <TextInput
         style={styles.input}
-        placeholder="Last Name"
+        placeholder="Apellidos"
         value={lastName}
         onChangeText={setLastName}
       />
       <TextInput
         style={styles.input}
-        placeholder="Email"
+        placeholder="Correo electronico"
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
       />
-      <Button title="Register" onPress={handleRegister} />
+      <Button title="Registrarse" onPress={handleRegister} />
     </View>
   );
 }
+
+// Aquí Cambiaremos los parametros para personalizar la pantalla 1: Registro
 
 const styles = StyleSheet.create({
   container: {

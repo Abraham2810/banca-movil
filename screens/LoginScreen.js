@@ -1,12 +1,11 @@
-// screens/LoginScreen.js
 import React from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 
 export default function LoginScreen({ navigation }) {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login Screen</Text>
-      <Button title="Back to Register" onPress={() => navigation.navigate('Register')} />
+      <Text style={styles.title}>Iniciar Sesión</Text>
+      <Button title="Regresar al registro" onPress={() => navigation.navigate('Register')} />
     </View>
   );
 }
