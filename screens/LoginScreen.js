@@ -5,7 +5,7 @@ export default function LoginScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Iniciar Sesión</Text>
-      <Button title="Regresar al registro" onPress={() => navigation.navigate('Register')} />
+      <Button title="Volver" onPress={() => navigation.navigate('Welcome')} />
     </View>
   );
 }

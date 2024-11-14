@@ -5,11 +5,19 @@ export default function RegisterScreen({ navigation }) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [passwordConf, setPasswordConf] = useState('');
+
+  const isFormValid = firstName && lastName && email && password && passwordConf;
 
   const handleRegister = () => {
-    console.log('User registered:', { firstName, lastName, email });
+    if (password !== passwordConf) {
+      alert('Las contraseñas no coinciden');
+      return;
+    }
+    console.log('User registered:', { firstName, lastName, email, password });
     navigation.navigate('Login');
-  };
+  };  
 
   return (
     <View style={styles.container}>
@@ -22,24 +30,37 @@ export default function RegisterScreen({ navigation }) {
       />
       <TextInput
         style={styles.input}
-        placeholder="Apellidos"
+        placeholder="Apellido"
         value={lastName}
         onChangeText={setLastName}
       />
       <TextInput
         style={styles.input}
-        placeholder="Correo electronico"
+        placeholder="Correo Electronico"
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
       />
-      <Button title="Registrarse" onPress={handleRegister} />
+      <TextInput
+  style={styles.input}
+  placeholder="Contraseña"
+  value={password}
+  onChangeText={setPassword}
+  secureTextEntry={true}
+/>
+<TextInput
+  style={styles.input}
+  placeholder="Confirmar Contraseña"
+  value={passwordConf}
+  onChangeText={setPasswordConf}
+  secureTextEntry={true}
+/>
+
+
+      <Button title="Registrarse" onPress={handleRegister} disabled={!isFormValid} />
     </View>
   );
 }
-
-// Aquí Cambiaremos los parametros para personalizar la pantalla 1: Registro
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
