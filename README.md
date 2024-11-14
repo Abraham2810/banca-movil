@@ -1,4 +1,5 @@
 # iNTEGRANTES DEL EQUIPO:
+
 - Sergio Fabian Jaime Robles
-- Pablo Lopez Hernandez
+- Pablo Lopez Hernández
 - Jesús Abraham Núñez Mendoza
