@@ -24,13 +24,13 @@ export default function RegisterScreen({ navigation }) {
       <Text style={styles.title}>Registrarse</Text>
       <TextInput
         style={styles.input}
-        placeholder="Nombre"
+        placeholder="Nombre(s)"
         value={firstName}
         onChangeText={setFirstName}
       />
       <TextInput
         style={styles.input}
-        placeholder="Apellido"
+        placeholder="Apellidos"
         value={lastName}
         onChangeText={setLastName}
       />
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    padding: 20,
+    padding: 40,
   },
   title: {
     fontSize: 24,
