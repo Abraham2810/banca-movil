@@ -20,3 +20,4 @@ export default function App() {
     </NavigationContainer>
   );
 }
+// App.js
