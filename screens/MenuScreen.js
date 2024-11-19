@@ -20,7 +20,7 @@ const MenuScreen = ({ navigation }) => {
             />
             <Button
             title="Historial de movimientos"
-            onPress={() => alert('Work in progress')}
+            onPress={() => navigation.navigate('Movements')}
             />
             <Button
             title="Cerrar sesión"
