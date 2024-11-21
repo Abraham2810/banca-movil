@@ -15,8 +15,8 @@ const MenuScreen = ({ navigation }) => {
             </View>
 
             <Button
-            title="Transferir dinero"
-            onPress={() => alert('Work in progress')}
+            title="Transferir"
+            onPress={() => navigation.navigate('GenerateQR')}
             />
             <Button
             title="Historial de movimientos"
