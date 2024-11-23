@@ -7,6 +7,7 @@ import WelcomeScreen from './screens/WelcomeScreen'
 import MenuScreen from './screens/MenuScreen';
 import MovementsScreen from './screens/MovementsScreen';
 import GenerateQRScreen from './screens/GenerateQRScreen';
+import ConfirmTransferScreen from './screens/ConfirmTransferScreen';
 
 const Stack = createStackNavigator();
 
@@ -20,6 +21,7 @@ export default function App() {
         <Stack.Screen name="Menu" component={MenuScreen} />
         <Stack.Screen name="Movements" component={MovementsScreen} />
         <Stack.Screen name= "GenerateQR" component={GenerateQRScreen} />
+        <Stack.Screen name= "ConfirmTransfer" component={ConfirmTransferScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

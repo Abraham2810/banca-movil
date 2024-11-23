@@ -1,28 +1,22 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import QRCode from 'react-native-qrcode-svg';
 
-export default function TransferQRScreen() {
+export default function GenerateQRScreen({ navigation }) {
   const [recipientName, setRecipientName] = useState('');
   const [recipientId, setRecipientId] = useState('');
   const [amount, setAmount] = useState('');
-  const [qrData, setQrData] = useState(null);
-
   const isFormValid = recipientName && recipientId && amount;
 
-  const handleGenerateQR = () => {
+  const handleNavigateToConfirm = () => {
     if (!isFormValid) {
-      Alert.alert('Error', 'Por favor, completa todos los campos antes de generar el QR.');
+      Alert.alert('Error', 'Por favor, completa todos los campos antes de continuar.');
       return;
     }
-    const data = {
+    navigation.navigate('ConfirmTransfer', {
       recipientName,
       recipientId,
       amount,
-    };
-
-    setQrData(JSON.stringify(data));
-    Alert.alert('QR generado', 'Escanea este código para realizar la transferencia.');
+    });
   };
 
   return (
@@ -48,13 +42,7 @@ export default function TransferQRScreen() {
         onChangeText={setAmount}
         keyboardType="numeric"
       />
-      <Button title="Generar código" onPress={handleGenerateQR} disabled={!isFormValid} />
-      {qrData && (
-        <View style={styles.qrContainer}>
-          <Text style={styles.qrLabel}>Escanea este código para transferir:</Text>
-          <QRCode value={qrData} size={200} />
-        </View>
-      )}
+      <Button title="Continuar" onPress={handleNavigateToConfirm} disabled={!isFormValid} />
     </View>
   );
 }
@@ -79,14 +67,5 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     borderRadius: 5,
     paddingHorizontal: 10,
-  },
-  qrContainer: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  qrLabel: {
-    fontSize: 16,
-    marginBottom: 10,
-    textAlign: 'center',
   },
 });
