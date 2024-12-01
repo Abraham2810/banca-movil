@@ -4,35 +4,64 @@ import { View, Text, Button, StyleSheet, Alert, TextInput } from 'react-native';
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const isFormValid = email.trim() && password.trim();
+  const handleLogin = async () => {
+    if (!isFormValid) {
+      Alert.alert('Error', 'Por favor, ingrese su correo electrónico y contraseña.');
+      return;
+    }
+    setLoading(true);
+    try {
+      const response = await fetch('http://172.17.212.42:3000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          password: password.trim(),
+        }),
+      });
 
-  const isFormValid = email && password;
-  
-  const handleLogin = () => {
-    if (!email || !password){
-      Alert.alert('Error', 'Introduzca un correo electronico y una contraseña.');
-    }else {
-      navigation.navigate('Menu');
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert('Éxito', data.message);
+        navigation.navigate('Menu');
+      } else {
+        Alert.alert('Error', data.message || 'Error desconocido.');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo conectar con el servidor.');
+      console.error('Error de conexión:', error);
+    } finally {
+      setLoading(false);
     }
   };
   return (
     <View style={styles.container}>
-      <Text style={styles.title}> Iniciar Sesión </Text>
+      <Text style={styles.title}>Iniciar Sesión</Text>
       <TextInput
-      style={styles.input}
-      placeholder="Correo Electronico"
-      value={email}
-      onChangeText={setEmail}
-      keyboardType="email-address"
-      autoCapitalize="none"
+        style={styles.input}
+        placeholder="Correo Electrónico"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
       />
       <TextInput
-      style={styles.input}
-      placeholder="Contraseña"
-      value={password}
-      onChangeText={setPassword}
-      secureTextEntry
+        style={styles.input}
+        placeholder="Contraseña"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
       />
-      <Button title="Iniciar Sesión" onPress={handleLogin} disabled={!isFormValid} />
+      <Button
+        title={loading ? "Cargando..." : "Iniciar Sesión"}
+        onPress={handleLogin}
+        disabled={!isFormValid || loading}
+      />
     </View>
   );
 };
@@ -40,7 +69,7 @@ const LoginScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center', 
+    justifyContent: 'center',
     padding: 20,
     backgroundColor: '#fff',
   },
@@ -51,16 +80,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   input: {
-    height: 40, 
+    height: 40,
     borderColor: '#ccc',
-    borderWidth: 1, 
+    borderWidth: 1,
     marginBottom: 15,
     borderRadius: 5,
     paddingHorizontal: 10,
   },
-  button:{
-    padding: 50,
-  },
 });
-
 export default LoginScreen;
