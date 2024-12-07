@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, Button, StyleSheet, Alert, TextInput } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const isFormValid = email.trim() && password.trim();
+
   const handleLogin = async () => {
     if (!isFormValid) {
       Alert.alert('Error', 'Por favor, ingrese su correo electrónico y contraseña.');
@@ -28,6 +30,7 @@ const LoginScreen = ({ navigation }) => {
 
       if (response.ok) {
         Alert.alert('Éxito', data.message);
+        await AsyncStorage.setItem('userToken', data.token); 
         navigation.navigate('Menu');
       } else {
         Alert.alert('Error', data.message || 'Error desconocido.');
@@ -39,6 +42,7 @@ const LoginScreen = ({ navigation }) => {
       setLoading(false);
     }
   };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Iniciar Sesión</Text>
@@ -88,4 +92,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
 });
+
 export default LoginScreen;

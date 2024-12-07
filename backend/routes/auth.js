@@ -1,9 +1,10 @@
 const jwt = require('jsonwebtoken');
 
-const SECRET_KEY = 'secret_key';
+const SECRET_KEY = 'secret_key'; 
 
 function authenticateToken(req, res, next) {
-  const token = req.headers['authorization'];
+  const token = req.headers['authorization']?.split(' ')[1]; 
+
   if (!token) return res.status(401).json({ message: 'Acceso denegado. Token no proporcionado.' });
 
   jwt.verify(token, SECRET_KEY, (err, user) => {
@@ -14,7 +15,11 @@ function authenticateToken(req, res, next) {
 }
 
 function generateToken(user) {
-  return jwt.sign(user, SECRET_KEY, { expiresIn: '1m' });
+  return jwt.sign(
+    { id: user.id, email: user.email }, 
+    SECRET_KEY,
+    { expiresIn: '1h' } 
+  );
 }
 
 module.exports = { authenticateToken, generateToken };
