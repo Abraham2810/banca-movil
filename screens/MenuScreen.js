@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const MenuScreen = ({ navigation }) => {
   const [accountBalance, setAccountBalance] = useState(null);
+  const [userInfo, setUserInfo] = useState({
+    userId: null,
+    firstName: '',
+    lastName: '',
+  });
 
   const getBalance = async () => {
     try {
@@ -14,10 +19,10 @@ const MenuScreen = ({ navigation }) => {
         return;
       }
 
-      const response = await fetch('http://192.168.1.68:3000/getBalance', {
+      const response = await fetch('http://192.168.1.3:3000/getBalance', {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`, 
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
@@ -25,13 +30,19 @@ const MenuScreen = ({ navigation }) => {
       const data = await response.json();
 
       if (response.ok) {
-        const balance = parseFloat(data.balance); 
+        const balance = parseFloat(data.balance);
 
         if (!isNaN(balance)) {
-          setAccountBalance(balance.toFixed(2));  
+          setAccountBalance(balance.toFixed(2));
         } else {
           Alert.alert('Error', 'Saldo no es un número válido');
         }
+
+        setUserInfo({
+          userId: data.userId,
+          firstName: data.firstName,
+          lastName: data.lastName,
+        });
       } else {
         Alert.alert('Error', data.message || 'Error al obtener el saldo');
       }
@@ -49,26 +60,57 @@ const MenuScreen = ({ navigation }) => {
     <View style={styles.container}>
       <Text style={styles.title}>Menú de inicio</Text>
 
-      <View style={styles.balanceContainer}>
-        <Text style={styles.balanceText}>Saldo actual:</Text>
-        <Text style={styles.balanceAmount}>
-          {accountBalance !== null ? `$${accountBalance}` : 'Cargando...'}
-        </Text>
+      <View style={styles.box}>
+        <View style={styles.userInfoContainer}>
+          <Text style={styles.userInfoText}>ID de usuario: {userInfo.userId}</Text>
+          <Text style={styles.userInfoText}>Nombre: {userInfo.firstName} {userInfo.lastName}</Text>
+        </View>
+
+        <View style={styles.balanceContainer}>
+          <Text style={styles.balanceText}>Saldo actual:</Text>
+          <Text style={styles.balanceAmount}>
+            {accountBalance !== null ? `$${accountBalance}` : 'Cargando...'}
+          </Text>
+        </View>
+
+        <View style={styles.buttonGroup}>
+          {/* Botón para Transferir */}
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('GenerateQR', { userId: userInfo.userId })}  // Pasar el userId
+          >
+            <Text style={styles.buttonText}>Transferir</Text>
+          </TouchableOpacity>
+
+          <View style={styles.buttonSpacing} />
+
+          {/* Botón para Recibir Transferencia */}
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('ReciveTransfer')}
+          >
+            <Text style={styles.buttonText}>Recibir Transferencia</Text>
+          </TouchableOpacity>
+
+          <View style={styles.buttonSpacing} />
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('Movements')}
+          >
+            <Text style={styles.buttonText}>Historial de movimientos</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
-      <Button
-        title="Transferir"
-        onPress={() => navigation.navigate('GenerateQR')}
-      />
-      <Button
-        title="Historial de movimientos"
-        onPress={() => navigation.navigate('Movements')}
-      />
-      <Button
-        title="Cerrar sesión"
-        color="#c00"
-        onPress={() => navigation.navigate('Welcome')}
-      />
+      <View style={styles.bottomSection}>
+        <TouchableOpacity
+          style={[styles.button, styles.logoutButton]}
+          onPress={() => navigation.navigate('Welcome')}
+        >
+          <Text style={styles.buttonText}>Cerrar sesión</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -76,28 +118,74 @@ const MenuScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     padding: 20,
     backgroundColor: '#f5f5f5',
   },
-  balanceContainer: {
+  title: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    position: 'absolute',
+    top: 10,
+    left: 10,
+  },
+  box: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    padding: 20,
+    backgroundColor: '#ffffff',
+    borderRadius: 10, 
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5, 
+    marginTop: 50,
+  },
+  userInfoContainer: {
     justifyContent: 'center',
     marginBottom: 30,
     alignItems: 'center',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 40,
-    textAlign: 'center',
+  userInfoText: {
+    fontSize: 18,
+    marginBottom: 10,
+  },
+  balanceContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
   },
   balanceText: {
     fontSize: 18,
+    fontWeight: 'bold',
   },
   balanceAmount: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 20,
+    color: '#2196F3',
+  },
+  buttonGroup: {
     marginTop: 10,
+  },
+  button: {
+    backgroundColor: '#2196F3',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  buttonSpacing: {
+    height: 10,  
+  },
+  logoutButton: {
+    backgroundColor: '#c00',
+  },
+  bottomSection: {
+    justifyContent: 'flex-end',
   },
 });
 

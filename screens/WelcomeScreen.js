@@ -1,18 +1,24 @@
 import React from 'react';
-import {View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 export default function WelcomeScreen({ navigation }) {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Bienvenido</Text>
-            <Button
-            title= "Login"
-            onPress={() => navigation.navigate('Login')}
-            />
-            <Button
-            title = "Registrarse"
-            onPress = {() => navigation.navigate('Register')}
-            />
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => navigation.navigate('Login')}
+                >
+                    <Text style={styles.buttonText}>Login</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => navigation.navigate('Register')}
+                >
+                    <Text style={styles.buttonText}>Registrarse</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 }
@@ -20,13 +26,30 @@ export default function WelcomeScreen({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'space-between',
         alignItems: 'center',
         padding: 20,
     },
     title: {
-        fontSize: 24,
+        fontSize: 30,
         fontWeight: 'bold',
-        marginBottom: 40,
+        marginTop: 40,
+    },
+    buttonContainer: {
+        width: '100%',
+        marginBottom: 20,
+    },
+    button: {
+        backgroundColor: '#007BFF', 
+        paddingVertical: 15,
+        paddingHorizontal: 25,
+        borderRadius: 40,
+        marginBottom: 10,
+        alignItems: 'center',
+    },
+    buttonText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
 });

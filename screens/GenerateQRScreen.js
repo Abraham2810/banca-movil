@@ -1,58 +1,137 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
+import QRCode from 'react-native-qrcode-svg';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function GenerateQRScreen({ navigation }) {
-  const [recipientName, setRecipientName] = useState('');
-  const [recipientId, setRecipientId] = useState('');
+const GenerateQRScreen = ({ route, navigation }) => {
+  const { userId } = route.params;
+
   const [amount, setAmount] = useState('');
-  const isFormValid = recipientName && recipientId && amount;
+  const [recipientId, setRecipientId] = useState('');
+  const [recipientName, setRecipientName] = useState('');
 
-  const handleNavigateToConfirm = () => {
-    if (!isFormValid) {
-      Alert.alert('Error', 'Por favor, completa todos los campos antes de continuar.');
+  const handleGenerateQR = () => {
+    if (!amount || !recipientId || !recipientName) {
+      Alert.alert('Error', 'Por favor, ingrese todos los campos.');
       return;
     }
-    navigation.navigate('ConfirmTransfer', {
-      recipientName,
-      recipientId,
-      amount,
-    });
+
+    if (parseFloat(amount) <= 0) {
+      Alert.alert('Error', 'El monto debe ser mayor a 0.');
+      return;
+    }
+
+    Alert.alert('QR generado', 'Escanee este código QR para realizar la transferencia.');
+  };
+
+  const handleDirectTransfer = async () => {
+    if (!amount || !recipientId || !recipientName) {
+      Alert.alert('Error', 'Por favor, complete todos los campos.');
+      return;
+    }
+
+    if (parseFloat(amount) <= 0) {
+      Alert.alert('Error', 'El monto debe ser mayor a 0.');
+      return;
+    }
+
+    try {
+      const token = await AsyncStorage.getItem('userToken');
+      if (!token) {
+        Alert.alert('Error', 'No se encontró el token de autenticación.');
+        return;
+      }
+
+      const response = await fetch('http://192.168.1.3:3000/transfer', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fromUserId: userId, 
+          toUserId: recipientId,
+          amount: parseFloat(amount),
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        Alert.alert(
+          'Éxito',
+          `Transferencia exitosa a ${recipientName} por $${amount}.`
+        );
+        setAmount('');
+        setRecipientId('');
+        setRecipientName('');
+      } else {
+        Alert.alert('Error', data.message || 'No se pudo completar la transferencia.');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo conectar con el servidor.');
+      console.error('Error al procesar transferencia directa:', error);
+    }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Transferir dinero</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Nombre del destinatario"
-        value={recipientName}
-        onChangeText={setRecipientName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Número de identificación"
-        value={recipientId}
-        onChangeText={setRecipientId}
-        keyboardType="numeric"
-      />
+      <Text style={styles.title}>Generar Código QR de Transferencia</Text>
+
       <TextInput
         style={styles.input}
         placeholder="Monto a transferir"
+        keyboardType="numeric"
         value={amount}
         onChangeText={setAmount}
-        keyboardType="numeric"
       />
-      <Button title="Continuar" onPress={handleNavigateToConfirm} disabled={!isFormValid} />
+
+      <TextInput
+        style={styles.input}
+        placeholder="ID del destinatario"
+        value={recipientId}
+        onChangeText={setRecipientId}
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Nombre completo del destinatario"
+        value={recipientName}
+        onChangeText={setRecipientName}
+      />
+
+      <Button title="Generar QR" onPress={handleGenerateQR} />
+
+      <View style={{ marginTop: 20 }}>
+        <Button
+          title="Transferir sin QR"
+          onPress={handleDirectTransfer}
+          color="#841584"
+        />
+      </View>
+
+      <View style={{ marginTop: 30 }}>
+        {userId && amount && recipientId && recipientName && (
+          <QRCode
+            value={JSON.stringify({
+              amount: parseFloat(amount),
+              fromUserId: userId,
+              toUserId: recipientId,
+              toUserName: recipientName,
+            })}
+            size={250}
+          />
+        )}
+      </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     justifyContent: 'center',
-    backgroundColor: '#fff',
+    alignItems: 'center',
+    padding: 20,
   },
   title: {
     fontSize: 24,
@@ -61,11 +140,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   input: {
-    height: 40,
-    borderColor: '#ccc',
+    width: '100%',
+    padding: 10,
+    borderColor: 'gray',
     borderWidth: 1,
-    marginBottom: 15,
     borderRadius: 5,
-    paddingHorizontal: 10,
+    marginBottom: 15,
+    backgroundColor: '#fff',
   },
 });
+
+export default GenerateQRScreen;

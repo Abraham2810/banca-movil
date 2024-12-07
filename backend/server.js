@@ -89,7 +89,7 @@ app.get('/protected', authenticateToken, (req, res) => {
 app.get('/getBalance', authenticateToken, (req, res) => {
   const userId = req.user.id; 
 
-  db.query('SELECT user_balance FROM users WHERE id = ?', [userId], (err, result) => {
+  db.query('SELECT user_balance, user_name, user_lastname FROM users WHERE id = ?', [userId], (err, result) => {
     if (err) {
       console.error('Error al obtener el saldo:', err);
       return res.status(500).json({ message: 'Error al obtener el saldo.' });
@@ -99,9 +99,52 @@ app.get('/getBalance', authenticateToken, (req, res) => {
       return res.status(404).json({ message: 'Usuario no encontrado.' });
     }
 
-    res.status(200).json({ balance: result[0].user_balance });
+    const user = result[0];
+    res.status(200).json({
+      balance: user.user_balance,
+      userId: userId,
+      firstName: user.user_name,
+      lastName: user.user_lastname
+    });
   });
 });
+
+app.post('/transfer', authenticateToken, (req, res) => {
+  const { fromUserId, toUserId, amount } = req.body;
+
+  if (!fromUserId || !toUserId || !amount) {
+    return res.status(400).json({ message: 'Datos incompletos.' });
+  }
+
+  db.query('SELECT * FROM users WHERE id = ?', [fromUserId], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: 'Error al verificar el usuario.' });
+    }
+
+    const sender = result[0];
+    if (sender.user_balance < amount) {
+      return res.status(400).json({ message: 'Saldo insuficiente.' });
+    }
+
+    db.query('UPDATE users SET user_balance = user_balance - ? WHERE id = ?', [amount, fromUserId], (err) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ message: 'Error al actualizar el saldo del remitente.' });
+      }
+
+      db.query('UPDATE users SET user_balance = user_balance + ? WHERE id = ?', [amount, toUserId], (err) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ message: 'Error al actualizar el saldo del receptor.' });
+        }
+
+        res.status(200).json({ message: 'Transferencia realizada con éxito.' });
+      });
+    });
+  });
+});
+
 
 app.listen(port, '0.0.0.0', () => {
   console.log(`Servidor corriendo en http://0.0.0.0:${port}`);
