@@ -13,13 +13,12 @@ const MenuScreen = ({ navigation }) => {
   const getBalance = async () => {
     try {
       const token = await AsyncStorage.getItem('userToken');
-
       if (!token) {
         Alert.alert('Error', 'No se ha encontrado el token de autenticación.');
         return;
       }
 
-      const response = await fetch('http://192.168.1.3:3000/getBalance', {
+      const response = await fetch('http://192.168.1.71:3000/getBalance', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -30,8 +29,8 @@ const MenuScreen = ({ navigation }) => {
       const data = await response.json();
 
       if (response.ok) {
+        console.log('Saldo obtenido:', data.balance); // Depuración
         const balance = parseFloat(data.balance);
-
         if (!isNaN(balance)) {
           setAccountBalance(balance.toFixed(2));
         } else {
@@ -53,8 +52,10 @@ const MenuScreen = ({ navigation }) => {
   };
 
   useEffect(() => {
-    getBalance();
-  }, []);
+    // Listener para recargar saldo al regresar a esta pantalla
+    const unsubscribe = navigation.addListener('focus', getBalance);
+    return unsubscribe;
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
@@ -74,17 +75,15 @@ const MenuScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.buttonGroup}>
-          {/* Botón para Transferir */}
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('GenerateQR', { userId: userInfo.userId })}  // Pasar el userId
+            onPress={() => navigation.navigate('GenerateQR', { userId: userInfo.userId })}
           >
             <Text style={styles.buttonText}>Transferir</Text>
           </TouchableOpacity>
 
           <View style={styles.buttonSpacing} />
 
-          {/* Botón para Recibir Transferencia */}
           <TouchableOpacity
             style={styles.button}
             onPress={() => navigation.navigate('ReciveTransfer')}
@@ -113,9 +112,7 @@ const MenuScreen = ({ navigation }) => {
       </View>
     </View>
   );
-};
-
-const styles = StyleSheet.create({
+};const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
