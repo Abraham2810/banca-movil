@@ -53,6 +53,55 @@ app.post('/register', async (req, res) => {
   }
 });
 
+app.post('/login', (req, res) => {
+  const { email, password } = req.body;
+  db.query('SELECT * FROM users WHERE user_email = ?', [email], async (err, result) => {
+    if (err) {
+      console.error('Error al buscar usuario:', err);
+      return res.status(500).json({ message: 'Error en el servidor.' });
+    }
+    if (result.length === 0) {
+      return res.status(404).json({ message: 'Correo electrónico no encontrado.' });
+    }
+    const user = result[0];
+    try {
+      const match = await verifyPassword(password, user.user_password);
+      if (match) {
+        const token = generateToken({ id: user.id, email: user.user_email });
+        return res.status(200).json({ message: 'Inicio de sesión exitoso.', token });
+      } else {
+        return res.status(401).json({ message: 'Contraseña incorrecta.' });
+      }
+    } catch (err) {
+      console.error('Error al verificar la contraseña:', err);
+      res.status(500).json({ message: 'Error interno del servidor.' });
+    }
+  });
+});
+app.get('/protected', authenticateToken, (req, res) => {
+  res.json({ message: 'Acceso permitido.', user: req.user });
+});
+app.get('/getBalance', authenticateToken, (req, res) => {
+  const userId = req.user.id; 
+  db.query('SELECT user_balance, user_name, user_lastname FROM users WHERE id = ?', [userId], (err, result) => {
+    if (err) {
+      console.error('Error al obtener el saldo:', err);
+      return res.status(500).json({ message: 'Error al obtener el saldo.' });
+    }
+    if (result.length === 0) {
+      return res.status(404).json({ message: 'Usuario no encontrado.' });
+    }
+    const user = result[0];
+    res.status(200).json({
+      balance: user.user_balance,
+      userId: userId,
+      firstName: user.user_name,
+      lastName: user.user_lastname
+    });
+  });
+});
+
+
 // Ruta para realizar una transferencia
 app.post('/transfer', authenticateToken, (req, res) => {
   const { fromUserId, toUserId, amount } = req.body;
