@@ -187,6 +187,26 @@ app.post('/transfer', authenticateToken, (req, res) => {
     });
   });
 });
+// Historial de movimientos
+
+app.get('/movements', authenticateToken, (req, res) => {
+  const userId = req.user.id;
+
+  db.query(
+    `SELECT * FROM movements 
+     WHERE from_user_id = ? OR to_user_id = ? 
+     ORDER BY transaction_date DESC`,
+    [userId, userId],
+    (err, results) => {
+      if (err) {
+        console.error('Error al obtener movimientos:', err);
+        return res.status(500).json({ message: 'Error interno del servidor.' });
+      }
+
+      res.status(200).json({ movements: results });
+    }
+  );
+});
 
 // Iniciar servidor
 app.listen(port, '0.0.0.0', () => {

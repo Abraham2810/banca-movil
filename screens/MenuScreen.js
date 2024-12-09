@@ -95,7 +95,7 @@ const MenuScreen = ({ navigation }) => {
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('Movements')}
+            onPress={() => navigation.navigate('History')}
           >
             <Text style={styles.buttonText}>Historial de movimientos</Text>
           </TouchableOpacity>
