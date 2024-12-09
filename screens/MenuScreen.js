@@ -29,7 +29,6 @@ const MenuScreen = ({ navigation }) => {
       const data = await response.json();
 
       if (response.ok) {
-        console.log('Saldo obtenido:', data.balance); // Depuración
         const balance = parseFloat(data.balance);
         if (!isNaN(balance)) {
           setAccountBalance(balance.toFixed(2));
@@ -52,7 +51,6 @@ const MenuScreen = ({ navigation }) => {
   };
 
   useEffect(() => {
-    // Listener para recargar saldo al regresar a esta pantalla
     const unsubscribe = navigation.addListener('focus', getBalance);
     return unsubscribe;
   }, [navigation]);
@@ -64,7 +62,9 @@ const MenuScreen = ({ navigation }) => {
       <View style={styles.box}>
         <View style={styles.userInfoContainer}>
           <Text style={styles.userInfoText}>ID de usuario: {userInfo.userId}</Text>
-          <Text style={styles.userInfoText}>Nombre: {userInfo.firstName} {userInfo.lastName}</Text>
+          <Text style={styles.userInfoText}>
+            Nombre: {userInfo.firstName} {userInfo.lastName}
+          </Text>
         </View>
 
         <View style={styles.balanceContainer}>
@@ -112,11 +112,13 @@ const MenuScreen = ({ navigation }) => {
       </View>
     </View>
   );
-};const styles = StyleSheet.create({
+};
+
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#CBD7D7',
   },
   title: {
     fontSize: 16,
@@ -130,12 +132,12 @@ const MenuScreen = ({ navigation }) => {
     justifyContent: 'flex-start',
     padding: 20,
     backgroundColor: '#ffffff',
-    borderRadius: 10, 
+    borderRadius: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
-    elevation: 5, 
+    elevation: 5,
     marginTop: 50,
   },
   userInfoContainer: {
@@ -157,13 +159,13 @@ const MenuScreen = ({ navigation }) => {
   },
   balanceAmount: {
     fontSize: 20,
-    color: '#2196F3',
+    color: '#6F028A',
   },
   buttonGroup: {
     marginTop: 10,
   },
   button: {
-    backgroundColor: '#2196F3',
+    backgroundColor: '#6F028A',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 25,
@@ -176,10 +178,10 @@ const MenuScreen = ({ navigation }) => {
     fontWeight: 'bold',
   },
   buttonSpacing: {
-    height: 10,  
+    height: 10,
   },
   logoutButton: {
-    backgroundColor: '#c00',
+    backgroundColor: '#FF0000',
   },
   bottomSection: {
     justifyContent: 'flex-end',

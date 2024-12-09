@@ -99,13 +99,15 @@ const GenerateQRScreen = ({ route, navigation }) => {
         onChangeText={setRecipientName}
       />
 
-      <Button title="Generar QR" onPress={handleGenerateQR} />
+      <View style={styles.buttonContainer}>
+        <Button title="Generar QR" onPress={handleGenerateQR} color="#6A0DAD" />
+      </View>
 
-      <View style={{ marginTop: 20 }}>
+      <View style={[styles.buttonContainer, { marginTop: 20 }]}>
         <Button
           title="Transferir sin QR"
           onPress={handleDirectTransfer}
-          color="#841584"
+          color="#6A0DAD"
         />
       </View>
 
@@ -132,6 +134,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+    backgroundColor: '#CBD7D7',
   },
   title: {
     fontSize: 24,
@@ -142,11 +145,21 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     padding: 10,
-    borderColor: 'gray',
+    borderColor: '#888888',
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 15,
     backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 4,
+  },
+  buttonContainer: {
+    width: '100%',
+    borderRadius: 5,
+    overflow: 'hidden',
   },
 });
 

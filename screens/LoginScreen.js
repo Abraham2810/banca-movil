@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Button, StyleSheet, Alert, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, TextInput } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = ({ navigation }) => {
@@ -30,7 +30,7 @@ const LoginScreen = ({ navigation }) => {
 
       if (response.ok) {
         Alert.alert('Éxito', data.message);
-        await AsyncStorage.setItem('userToken', data.token); 
+        await AsyncStorage.setItem('userToken', data.token);
         navigation.navigate('Menu');
       } else {
         Alert.alert('Error', data.message || 'Error desconocido.');
@@ -53,6 +53,7 @@ const LoginScreen = ({ navigation }) => {
         onChangeText={setEmail}
         keyboardType="email-address"
         autoCapitalize="none"
+        borderColor= "#888888"
       />
       <TextInput
         style={styles.input}
@@ -60,12 +61,24 @@ const LoginScreen = ({ navigation }) => {
         value={password}
         onChangeText={setPassword}
         secureTextEntry
+        borderColor="#888888"
       />
-      <Button
-        title={loading ? "Cargando..." : "Iniciar Sesión"}
+      <TouchableOpacity
+        style={[
+          styles.button,
+          {
+            backgroundColor: loading
+              ? '#B0BEC5'
+              : isFormValid
+              ? '#6F028A'
+              : '#B0BEC5',
+          },
+        ]}
         onPress={handleLogin}
         disabled={!isFormValid || loading}
-      />
+      >
+        <Text style={styles.buttonText}>{loading ? 'Cargando...' : 'Iniciar Sesión'}</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -75,7 +88,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#CBD7D7',
   },
   title: {
     fontSize: 24,
@@ -90,6 +103,15 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     borderRadius: 5,
     paddingHorizontal: 10,
+  },
+  button: {
+    padding: 12,
+    alignItems: 'center',
+    borderRadius: 50,
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
 

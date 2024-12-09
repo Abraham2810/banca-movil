@@ -26,7 +26,7 @@ const HistoryScreen = () => {
         const data = await response.json();
 
         if (response.ok) {
-          setMovements(data.movements); // Asegúrate de que el backend devuelva una propiedad "movements"
+          setMovements(data.movements);
         } else {
           Alert.alert('Error', data.message || 'No se pudo obtener el historial de movimientos.');
         }
@@ -54,8 +54,8 @@ const HistoryScreen = () => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-        <Text>Cargando historial de movimientos...</Text>
+        <ActivityIndicator size="large" color="#6A0DAD" />
+        <Text style={styles.loadingText}>Cargando historial de movimientos...</Text>
       </View>
     );
   }
@@ -77,20 +77,21 @@ const HistoryScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#CBD7D7',
     padding: 10,
   },
   title: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 15,
     textAlign: 'center',
+    color: '#6A0DAD',
   },
   listContainer: {
     paddingBottom: 20,
   },
   movementItem: {
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#EDE7F6',
     padding: 15,
     marginBottom: 10,
     borderRadius: 8,
@@ -99,20 +100,28 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
+    borderLeftWidth: 5,
+    borderLeftColor: '#6A0DAD',
   },
   movementText: {
     fontSize: 16,
+    color: '#4A4A4A',
   },
   emptyText: {
     textAlign: 'center',
     marginTop: 20,
     fontSize: 16,
-    color: '#888',
+    color: '#6A0DAD',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#6A0DAD',
   },
 });
 

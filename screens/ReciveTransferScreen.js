@@ -3,7 +3,7 @@ import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ReceiveTransferScreen = ({ navigation }) => {
-  const [userId, setUserId] = useState(''); // El ID del usuario que recibirá la transferencia
+  const [userId, setUserId] = useState('');
   const [amount, setAmount] = useState('');
   const [senderId, setSenderId] = useState('');
   const [senderName, setSenderName] = useState('');
@@ -34,7 +34,7 @@ const ReceiveTransferScreen = ({ navigation }) => {
         },
         body: JSON.stringify({
           fromUserId: senderId,
-          toUserId: userId, // El ID ingresado manualmente
+          toUserId: userId,
           amount: parseFloat(amount),
         }),
       });
@@ -90,10 +90,12 @@ const ReceiveTransferScreen = ({ navigation }) => {
         keyboardType="numeric"
       />
 
-      <Button title="Recibir Transferencia" onPress={handleReceiveTransfer} />
+      <View style={styles.buttonContainer}>
+        <Button color="#6A0DAD" title="Recibir Transferencia" onPress={handleReceiveTransfer} />
+      </View>
 
-      <View style={{ marginTop: 20 }}>
-        <Button title="Volver al Menú" onPress={() => navigation.goBack()} />
+      <View style={[styles.buttonContainer, { marginTop: 20 }]}>
+        <Button color="#6A0DAD" title="Volver al Menú" onPress={() => navigation.goBack()} />
       </View>
     </View>
   );
@@ -104,7 +106,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#CBD7D7',
   },
   title: {
     fontSize: 24,
@@ -114,11 +116,20 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#888888',
     borderRadius: 5,
     padding: 10,
     marginBottom: 15,
     backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 4,
+  },
+  buttonContainer: {
+    borderRadius: 5,
+    overflow: 'hidden',
   },
 });
 

@@ -109,15 +109,11 @@ app.post('/transfer', authenticateToken, (req, res) => {
   if (!fromUserId || !toUserId || !amount) {
     return res.status(400).json({ message: 'Datos incompletos.' });
   }
-
-  // Comenzamos una transacción para asegurar que ambas actualizaciones de saldo sean atómicas
   db.beginTransaction((err) => {
     if (err) {
       console.error('Error al iniciar transacción:', err);
       return res.status(500).json({ message: 'Error al iniciar la transacción.' });
     }
-
-    // Verificar el saldo del remitente
     db.query('SELECT user_balance FROM users WHERE id = ?', [fromUserId], (err, result) => {
       if (err) {
         console.error('Error al verificar saldo del remitente:', err);
@@ -140,7 +136,6 @@ app.post('/transfer', authenticateToken, (req, res) => {
         });
       }
 
-      // Actualizar saldo del remitente
       db.query('UPDATE users SET user_balance = user_balance - ? WHERE id = ?', [amount, fromUserId], (err) => {
         if (err) {
           console.error('Error al actualizar saldo del remitente:', err);
@@ -157,7 +152,6 @@ app.post('/transfer', authenticateToken, (req, res) => {
             });
           }
 
-          // Registrar el movimiento en la tabla movements
           db.query(
             'INSERT INTO movements (from_user_id, to_user_id, amount) VALUES (?, ?, ?)',
             [fromUserId, toUserId, amount],
