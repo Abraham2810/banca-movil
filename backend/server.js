@@ -23,28 +23,20 @@ app.post('/register', async (req, res) => {
     const hashedPassword = await encryptPassword(password);
 
     db.query(
-      'INSERT INTO users (user_name, user_lastname, user_email, user_password) VALUES (?, ?, ?, ?)',
-      [firstName, lastName, email, hashedPassword],
+      'INSERT INTO users (user_name, user_lastname, user_email, user_password, user_balance) VALUES (?, ?, ?, ?, ?)',
+      [firstName, lastName, email, hashedPassword, 100],
       (err, result) => {
         if (err) {
-          console.error(err);
+          console.error('Error al registrar el usuario:', err);
           return res.status(500).json({ message: 'Error al registrar el usuario.' });
         }
 
         const userId = result.insertId;
 
-        db.query(
-          'INSERT INTO accounts (user_id, balance) VALUES (?, ?)',
-          [userId, 100], // Saldo inicial de 100
-          (err, result) => {
-            if (err) {
-              console.error(err);
-              return res.status(500).json({ message: 'Error al crear la cuenta del usuario.' });
-            }
-
-            res.status(200).json({ message: 'Usuario registrado con éxito y cuenta creada con saldo inicial de 100.' });
-          }
-        );
+        res.status(200).json({
+          message: 'Usuario registrado con éxito y cuenta creada con saldo inicial de 100.',
+          userId: userId,
+        });
       }
     );
   } catch (err) {
@@ -52,6 +44,7 @@ app.post('/register', async (req, res) => {
     res.status(500).json({ message: 'Error interno del servidor.' });
   }
 });
+
 
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
